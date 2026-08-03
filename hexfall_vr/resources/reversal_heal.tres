@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ReversalHealAbility" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/reversal_heal.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+ability_name = "Reversal Heal"
+essence_cost = 25.0
+cooldown = 8.0
+heal_amount = 30.0
+tick_duration = 2.0

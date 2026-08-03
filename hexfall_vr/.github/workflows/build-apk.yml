@@ -1,0 +1,107 @@
+name: Build Hexfall VR APK
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:   # lets you trigger it manually from the Actions tab
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      # ── 1. Checkout ────────────────────────────────────────────────────────
+      - uses: actions/checkout@v4
+
+      # ── 2. Java (required by Godot Android export) ─────────────────────────
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      # ── 3. Android SDK ─────────────────────────────────────────────────────
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK platform + NDK
+        run: |
+          sdkmanager --install \
+            "platforms;android-32" \
+            "build-tools;34.0.0" \
+            "ndk;23.2.8568313" \
+            "cmake;3.22.1"
+
+      # ── 4. Debug keystore (used when no release keystore is set) ───────────
+      - name: Create debug keystore
+        run: |
+          keytool -genkey -v \
+            -keystore $HOME/debug.keystore \
+            -alias androiddebugkey \
+            -keyalg RSA -keysize 2048 \
+            -validity 10000 \
+            -storepass android \
+            -keypass android \
+            -dname "CN=Android Debug,O=Android,C=US"
+
+      # ── 5. Godot 4.6.3 headless binary ─────────────────────────────────────
+      - name: Download Godot 4.6.3 headless
+        run: |
+          wget -q https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip \
+            -O /tmp/godot.zip
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          mv /tmp/godot/Godot_v4.6.3-stable_linux.x86_64 /usr/local/bin/godot
+          chmod +x /usr/local/bin/godot
+
+      # ── 6. Godot Android export templates ──────────────────────────────────
+      - name: Download export templates
+        run: |
+          TPZ_URL=https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_export_templates.tpz
+          wget -q "$TPZ_URL" -O /tmp/templates.tpz
+          TEMPLATES_DIR="$HOME/.local/share/godot/export_templates/4.6.3.stable"
+          mkdir -p "$TEMPLATES_DIR"
+          unzip -q /tmp/templates.tpz -d /tmp/templates_raw
+          mv /tmp/templates_raw/templates/* "$TEMPLATES_DIR/"
+
+      # ── 7. Godot editor settings (Android SDK path) ─────────────────────────
+      - name: Configure Godot editor settings
+        run: |
+          mkdir -p "$HOME/.config/godot"
+          cat > "$HOME/.config/godot/editor_settings-4.tres" <<EOF
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_SDK_ROOT"
+          export/android/debug_keystore = "$HOME/debug.keystore"
+          export/android/debug_keystore_user = "androiddebugkey"
+          export/android/debug_keystore_pass = "android"
+          export/android/force_system_user = false
+          export/android/timestamping_authority_url = ""
+          export/android/shutdown_adb_on_exit = true
+          EOF
+
+      # ── 8. Export ───────────────────────────────────────────────────────────
+      - name: Export APK (debug)
+        run: |
+          mkdir -p build
+          godot --headless --path . --export-debug "Android" build/hexfall_vr.apk
+        working-directory: ${{ github.workspace }}
+
+      # ── 9. Upload artifact ──────────────────────────────────────────────────
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: hexfall-vr-apk
+          path: build/hexfall_vr.apk
+          retention-days: 30
+
+  # ── Optional: release signing (set these secrets in repo settings) ─────────
+  # RELEASE_KEYSTORE_BASE64  — base64 of your .keystore file
+  # RELEASE_KEYSTORE_ALIAS
+  # RELEASE_KEYSTORE_PASS
+  # RELEASE_KEY_PASS
+  #
+  # Then change step 8 to --export-release and pass the keystore via
+  # export_presets.cfg keystore/release* fields, or via a post-build
+  # apksigner call.
