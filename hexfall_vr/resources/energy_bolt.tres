@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="EnergyBoltAbility" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/energy_bolt.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+ability_name = "Energy Bolt"
+essence_cost = 10.0
+cooldown = 0.6
+damage = 18.0
+speed = 30.0

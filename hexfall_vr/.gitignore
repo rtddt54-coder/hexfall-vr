@@ -1,0 +1,15 @@
+# Godot generated
+.godot/
+*.import
+*.uid
+
+# Build output
+build/
+
+# Android
+*.apk
+*.aab
+
+# OS
+.DS_Store
+Thumbs.db

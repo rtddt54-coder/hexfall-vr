@@ -1,0 +1,36 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/player.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/energy_bolt.tres" id="2"]
+[ext_resource type="Resource" path="res://resources/barrier_ward.tres" id="3"]
+[ext_resource type="Resource" path="res://resources/sanctum_break.tres" id="4"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.35
+height = 1.7
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_pointer"]
+radius = 0.01
+height = 0.2
+
+[node name="Player" type="CharacterBody3D" groups=["player"]]
+collision_layer = 2
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_body")
+position = Vector3(0, 0.85, 0)
+
+[node name="XROrigin3D" type="XROrigin3D" parent="."]
+script = ExtResource("1")
+right_hand_ability = ExtResource("2")
+left_hand_ability = ExtResource("3")
+ultimate_ability = ExtResource("4")
+
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D"]
+
+[node name="LeftController" type="XRController3D" parent="XROrigin3D"]
+tracker = &"left_hand"
+
+[node name="RightController" type="XRController3D" parent="XROrigin3D"]
+tracker = &"right_hand"
