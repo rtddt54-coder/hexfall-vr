@@ -1,0 +1,219 @@
+[gd_scene load_steps=29 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="1"]
+[ext_resource type="Script" path="res://scripts/freeplay_manager.gd" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/HUD.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/NPC.tscn" id="4"]
+
+[sub_resource type="ProceduralSkyMaterial" id="Sky_mat"]
+sky_top_color = Color(0.04, 0.01, 0.1, 1)
+sky_horizon_color = Color(0.12, 0.05, 0.2, 1)
+ground_bottom_color = Color(0.02, 0.01, 0.05, 1)
+ground_horizon_color = Color(0.1, 0.04, 0.16, 1)
+
+[sub_resource type="Sky" id="Sky_sky"]
+sky_material = SubResource("Sky_mat")
+
+[sub_resource type="Environment" id="Env"]
+background_mode = 2
+sky = SubResource("Sky_sky")
+ambient_light_source = 3
+ambient_light_color = Color(0.25, 0.15, 0.4, 1)
+ambient_light_energy = 0.5
+glow_enabled = true
+glow_intensity = 0.9
+glow_bloom = 0.15
+
+[sub_resource type="BoxMesh" id="FloorMesh"]
+size = Vector3(32, 0.25, 32)
+
+[sub_resource type="StandardMaterial3D" id="FloorMat"]
+albedo_color = Color(0.07, 0.07, 0.12, 1)
+emission_enabled = true
+emission = Color(0.04, 0.01, 0.07)
+emission_energy_multiplier = 0.4
+
+[sub_resource type="BoxShape3D" id="FloorShape"]
+size = Vector3(32, 0.25, 32)
+
+[sub_resource type="BoxMesh" id="WallMeshX"]
+size = Vector3(32, 5, 0.4)
+
+[sub_resource type="BoxShape3D" id="WallShapeX"]
+size = Vector3(32, 5, 0.4)
+
+[sub_resource type="BoxMesh" id="WallMeshZ"]
+size = Vector3(0.4, 5, 32)
+
+[sub_resource type="BoxShape3D" id="WallShapeZ"]
+size = Vector3(0.4, 5, 32)
+
+[sub_resource type="StandardMaterial3D" id="WallMat"]
+albedo_color = Color(0.07, 0.04, 0.12, 1)
+emission_enabled = true
+emission = Color(0.06, 0.02, 0.1)
+emission_energy_multiplier = 0.5
+
+[sub_resource type="BoxMesh" id="PlatMesh"]
+size = Vector3(6, 0.4, 6)
+
+[sub_resource type="BoxShape3D" id="PlatShape"]
+size = Vector3(6, 0.4, 6)
+
+[sub_resource type="StandardMaterial3D" id="PlatMat"]
+albedo_color = Color(0.12, 0.07, 0.2, 1)
+emission_enabled = true
+emission = Color(0.1, 0.02, 0.18)
+emission_energy_multiplier = 0.6
+
+[sub_resource type="CylinderMesh" id="PillarMesh"]
+top_radius = 0.3
+bottom_radius = 0.35
+height = 4.0
+
+[sub_resource type="CylinderShape3D" id="PillarShape"]
+radius = 0.35
+height = 4.0
+
+[sub_resource type="StandardMaterial3D" id="PillarMat"]
+albedo_color = Color(0.08, 0.04, 0.14, 1)
+emission_enabled = true
+emission = Color(0.3, 0.04, 0.5)
+emission_energy_multiplier = 1.0
+
+[node name="Freeplay" type="Node3D"]
+
+[node name="FreeplayManager" type="Node3D" parent="."]
+script = ExtResource("2")
+hud_node = NodePath("../HUD")
+player_node = NodePath("../Player/XROrigin3D")
+npc_count = 8
+npc_spawn_radius = 10.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.7,-0.5,0.5, 0,0.7,0.7, -0.7,-0.5,0.5, 0,10,0)
+light_energy = 0.7
+shadow_enabled = true
+
+[node name="Floor" type="StaticBody3D" parent="."]
+collision_layer = 1
+[node name="Mesh" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("FloorMesh")
+material_override = SubResource("FloorMat")
+[node name="Col" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("FloorShape")
+
+[node name="WallN" type="StaticBody3D" parent="."]
+transform = Transform3D(1,0,0,0,1,0,0,0,1, 0,2.5,-16)
+collision_layer = 1
+[node name="Mesh" type="MeshInstance3D" parent="WallN"]
+mesh = SubResource("WallMeshX")
+material_override = SubResource("WallMat")
+[node name="Col" type="CollisionShape3D" parent="WallN"]
+shape = SubResource("WallShapeX")
+
+[node name="WallS" type="StaticBody3D" parent="."]
+transform = Transform3D(1,0,0,0,1,0,0,0,1, 0,2.5,16)
+collision_layer = 1
+[node name="Mesh" type="MeshInstance3D" parent="WallS"]
+mesh = SubResource("WallMeshX")
+material_override = SubResource("WallMat")
+[node name="Col" type="CollisionShape3D" parent="WallS"]
+shape = SubResource("WallShapeX")
+
+[node name="WallE" type="StaticBody3D" parent="."]
+transform = Transform3D(1,0,0,0,1,0,0,0,1, 16,2.5,0)
+collision_layer = 1
+[node name="Mesh" type="MeshInstance3D" parent="WallE"]
+mesh = SubResource("WallMeshZ")
+material_override = SubResource("WallMat")
+[node name="Col" type="CollisionShape3D" parent="WallE"]
+shape = SubResource("WallShapeZ")
+
+[node name="WallW" type="StaticBody3D" parent="."]
+transform = Transform3D(1,0,0,0,1,0,0,0,1, -16,2.5,0)
+collision_layer = 1
+[node name="Mesh" type="MeshInstance3D" parent="WallW"]
+mesh = SubResource("WallMeshZ")
+material_override = SubResource("WallMat")
+[node name="Col" type="CollisionShape3D" parent="WallW"]
+shape = SubResource("WallShapeZ")
+
+[node name="PlatA" type="StaticBody3D" parent="."]
+transform = Transform3D(1,0,0,0,1,0,0,0,1, 9,0.5,9)
+collision_layer = 1
+[node name="Mesh" type="MeshInstance3D" parent="PlatA"]
+mesh = SubResource("PlatMesh")
+material_override = SubResource("PlatMat")
+[node name="Col" type="CollisionShape3D" parent="PlatA"]
+shape = SubResource("PlatShape")
+
+[node name="PlatB" type="StaticBody3D" parent="."]
+transform = Transform3D(1,0,0,0,1,0,0,0,1, -9,0.8,-9)
+collision_layer = 1
+[node name="Mesh" type="MeshInstance3D" parent="PlatB"]
+mesh = SubResource("PlatMesh")
+material_override = SubResource("PlatMat")
+[node name="Col" type="CollisionShape3D" parent="PlatB"]
+shape = SubResource("PlatShape")
+
+[node name="PillarA" type="StaticBody3D" parent="."]
+transform = Transform3D(1,0,0,0,1,0,0,0,1, 0,2,0)
+collision_layer = 1
+[node name="Mesh" type="MeshInstance3D" parent="PillarA"]
+mesh = SubResource("PillarMesh")
+material_override = SubResource("PillarMat")
+[node name="Col" type="CollisionShape3D" parent="PillarA"]
+shape = SubResource("PillarShape")
+
+[node name="PillarB" type="StaticBody3D" parent="."]
+transform = Transform3D(1,0,0,0,1,0,0,0,1, 7,2,-7)
+collision_layer = 1
+[node name="Mesh" type="MeshInstance3D" parent="PillarB"]
+mesh = SubResource("PillarMesh")
+material_override = SubResource("PillarMat")
+[node name="Col" type="CollisionShape3D" parent="PillarB"]
+shape = SubResource("PillarShape")
+
+[node name="PillarC" type="StaticBody3D" parent="."]
+transform = Transform3D(1,0,0,0,1,0,0,0,1, -7,2,7)
+collision_layer = 1
+[node name="Mesh" type="MeshInstance3D" parent="PillarC"]
+mesh = SubResource("PillarMesh")
+material_override = SubResource("PillarMat")
+[node name="Col" type="CollisionShape3D" parent="PillarC"]
+shape = SubResource("PillarShape")
+
+[node name="Player" parent="." instance=ExtResource("1")]
+transform = Transform3D(1,0,0,0,1,0,0,0,1, 0,0,0)
+
+[node name="HUD" parent="." instance=ExtResource("3")]
+follow_camera = NodePath("../Player/XROrigin3D/XRCamera3D")
+
+[node name="NPCs" type="Node3D" parent="."]
+[node name="NPC1" parent="NPCs" instance=ExtResource("4")]
+transform = Transform3D(1,0,0,0,1,0,0,0,1, 4, 0.1, 0)
+[node name="NPC2" parent="NPCs" instance=ExtResource("4")]
+transform = Transform3D(1,0,0,0,1,0,0,0,1, -4, 0.1, 0)
+npc_color = Color(0.3, 0.4, 0.7)
+[node name="NPC3" parent="NPCs" instance=ExtResource("4")]
+transform = Transform3D(1,0,0,0,1,0,0,0,1, 0, 0.1, 4)
+npc_color = Color(0.6, 0.3, 0.5)
+[node name="NPC4" parent="NPCs" instance=ExtResource("4")]
+transform = Transform3D(1,0,0,0,1,0,0,0,1, 0, 0.1, -4)
+npc_color = Color(0.7, 0.5, 0.2)
+[node name="NPC5" parent="NPCs" instance=ExtResource("4")]
+transform = Transform3D(1,0,0,0,1,0,0,0,1, 5, 0.1, 5)
+npc_color = Color(0.2, 0.6, 0.55)
+[node name="NPC6" parent="NPCs" instance=ExtResource("4")]
+transform = Transform3D(1,0,0,0,1,0,0,0,1, -5, 0.1, -5)
+npc_color = Color(0.5, 0.2, 0.7)
+[node name="NPC7" parent="NPCs" instance=ExtResource("4")]
+transform = Transform3D(1,0,0,0,1,0,0,0,1, -5, 0.1, 5)
+npc_color = Color(0.4, 0.7, 0.3)
+[node name="NPC8" parent="NPCs" instance=ExtResource("4")]
+transform = Transform3D(1,0,0,0,1,0,0,0,1, 5, 0.1, -5)
+npc_color = Color(0.7, 0.4, 0.2)

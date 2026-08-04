@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ReversalPurpleAbility" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/reversal_purple.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+ability_name = "Reversal Purple"
+essence_cost = 22.0
+cooldown = 10.0
+heal_amount = 35.0
+slow_radius = 4.0
+slow_multiplier = 0.4
+slow_duration = 2.0
+burst_color = Color(0.7, 0.1, 1.0, 1.0)

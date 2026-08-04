@@ -1,9 +1,8 @@
 extends XROrigin3D
 class_name Player
 
-## Hexfall player controller: VR locomotion via thumbstick, ability
-## casting bound to controller triggers/buttons, essence resource,
-## health, shield, and buff handling.
+## Hexfall player controller: VR locomotion, snap-turn,
+## ability casting, essence pool, health, shield, buffs, score.
 
 @export var max_health: float = 100.0
 @export var max_essence: float = 100.0
@@ -11,15 +10,16 @@ class_name Player
 @export var move_speed: float = 2.5
 @export var snap_turn_angle: float = 30.0
 
-@export var right_hand_ability: Ability
-@export var left_hand_ability: Ability
-@export var ultimate_ability: Ability
-@export var secondary_ability: Ability  ## B/Y button on left controller
+## Ability slots — assigned in Inspector / Player.tscn
+@export var right_hand_ability: Ability   ## Right trigger
+@export var left_hand_ability: Ability    ## Left trigger
+@export var ultimate_ability: Ability     ## Right A/X button
+@export var secondary_ability: Ability   ## Left B/Y button
 
-@onready var head: XRCamera3D = $XRCamera3D
-@onready var left_controller: XRController3D = $LeftController
+@onready var head: XRCamera3D        = $XRCamera3D
+@onready var left_controller: XRController3D  = $LeftController
 @onready var right_controller: XRController3D = $RightController
-@onready var body: CharacterBody3D = get_parent() as CharacterBody3D
+@onready var body: CharacterBody3D   = get_parent() as CharacterBody3D
 
 var health: float
 var essence: float
@@ -37,9 +37,8 @@ signal died
 signal ability_used(slot: String, cooldown_fraction: float)
 
 func _ready() -> void:
-	health = max_health
+	health  = max_health
 	essence = max_essence
-
 	if left_controller:
 		left_controller.button_pressed.connect(_on_left_button)
 	if right_controller:
@@ -72,46 +71,35 @@ func _handle_locomotion(delta: float) -> void:
 		body.velocity.z = move_toward(body.velocity.z, 0.0, move_speed)
 	else:
 		var forward := -head.global_transform.basis.z
-		forward.y = 0.0
-		forward = forward.normalized()
+		forward.y = 0.0; forward = forward.normalized()
 		var right := head.global_transform.basis.x
-		right.y = 0.0
-		right = right.normalized()
+		right.y = 0.0; right = right.normalized()
+		var speed := move_speed * get_speed_multiplier()
 		var move_dir := (forward * input_vec.y + right * input_vec.x)
-		body.velocity.x = move_dir.x * move_speed
-		body.velocity.z = move_dir.z * move_speed
+		body.velocity.x = move_dir.x * speed
+		body.velocity.z = move_dir.z * speed
 
-	# Gravity
-	if not body.is_on_floor():
-		body.velocity.y -= 9.8 * delta
-	else:
-		body.velocity.y = 0.0
-
+	body.velocity.y = 0.0 if body.is_on_floor() else body.velocity.y - 9.8 * delta
 	body.move_and_slide()
 
 func _handle_snap_turn(delta: float) -> void:
 	_snap_cooldown = max(0.0, _snap_cooldown - delta)
 	if _snap_cooldown > 0.0 or not right_controller:
 		return
-	var right_stick: Vector2 = right_controller.get_vector2("primary")
-	if abs(right_stick.x) > 0.7:
-		var angle := deg_to_rad(snap_turn_angle) * sign(right_stick.x)
-		body.global_rotation.y -= angle
+	var rx: float = right_controller.get_vector2("primary").x
+	if abs(rx) > 0.7:
+		body.global_rotation.y -= deg_to_rad(snap_turn_angle) * sign(rx)
 		_snap_cooldown = 0.35
 
 func _on_left_button(name: String) -> void:
 	match name:
-		"trigger_click":
-			_cast(left_hand_ability, left_controller, "left")
-		"by_button":
-			_cast(secondary_ability, left_controller, "secondary")
+		"trigger_click": _cast(left_hand_ability,  left_controller,  "left")
+		"by_button":     _cast(secondary_ability,  left_controller,  "secondary")
 
 func _on_right_button(name: String) -> void:
 	match name:
-		"trigger_click":
-			_cast(right_hand_ability, right_controller, "right")
-		"ax_button":
-			_cast(ultimate_ability, right_controller, "ultimate")
+		"trigger_click": _cast(right_hand_ability, right_controller, "right")
+		"ax_button":     _cast(ultimate_ability,   right_controller, "ultimate")
 
 func _cast(ability: Ability, controller: XRController3D, slot: String) -> void:
 	if ability == null or controller == null:
@@ -122,9 +110,7 @@ func _cast(ability: Ability, controller: XRController3D, slot: String) -> void:
 		return
 	essence -= ability.essence_cost
 	ability.start_cooldown()
-	var origin := controller.global_position
-	var direction := -controller.global_transform.basis.z
-	ability.execute(self, origin, direction)
+	ability.execute(self, controller.global_position, -controller.global_transform.basis.z)
 	ability_used.emit(slot, ability.cooldown_fraction())
 
 func take_damage(amount: float, source: Node = null) -> void:
@@ -132,9 +118,8 @@ func take_damage(amount: float, source: Node = null) -> void:
 		return
 	var remaining := amount
 	if shield > 0.0:
-		var absorbed: float = min(shield, remaining)
-		shield -= absorbed
-		remaining -= absorbed
+		var absorbed := min(shield, remaining)
+		shield -= absorbed; remaining -= absorbed
 		shield_changed.emit(shield)
 	health = max(0.0, health - remaining)
 	health_changed.emit(health, max_health)
@@ -142,17 +127,18 @@ func take_damage(amount: float, source: Node = null) -> void:
 		died.emit()
 
 func apply_shield(amount: float, duration: float) -> void:
-	shield = amount
-	_shield_timer = duration
+	shield = amount; _shield_timer = duration
 	shield_changed.emit(shield)
 
+func restore_essence(amount: float) -> void:
+	essence = min(max_essence, essence + amount)
+	essence_changed.emit(essence, max_essence)
+
 func apply_heal_over_time(amount: float, duration: float) -> void:
-	var tick_count: int = max(1, int(duration))
-	var per_tick := amount / float(tick_count)
-	_heal_ticks(tick_count, per_tick)
+	_heal_ticks(max(1, int(duration)), amount / float(max(1, int(duration))))
 
 func _heal_ticks(count: int, per_tick: float) -> void:
-	if count <= 0:
+	if count <= 0 or not is_inside_tree():
 		return
 	await get_tree().create_timer(1.0).timeout
 	if not is_inside_tree():
@@ -165,14 +151,10 @@ func apply_buff(buff_name: String, multiplier: float, duration: float) -> void:
 	_buffs[buff_name] = {"duration": duration, "multiplier": multiplier}
 
 func get_damage_multiplier() -> float:
-	if _buffs.has("damage_multiplier"):
-		return _buffs["damage_multiplier"]["multiplier"]
-	return 1.0
+	return _buffs["damage_multiplier"]["multiplier"] if _buffs.has("damage_multiplier") else 1.0
 
 func get_speed_multiplier() -> float:
-	if _buffs.has("speed_multiplier"):
-		return _buffs["speed_multiplier"]["multiplier"]
-	return 1.0
+	return _buffs["speed_multiplier"]["multiplier"] if _buffs.has("speed_multiplier") else 1.0
 
 func add_score(points: int) -> void:
 	score += points

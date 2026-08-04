@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="InfiniteVoidAbility" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/infinite_void.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+ability_name = "Domain Expansion: Infinite Void"
+essence_cost = 80.0
+cooldown = 30.0
+radius = 20.0
+duration = 10.0
+tick_damage = 6.0
+tick_interval = 0.4

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ReversalBlueAbility" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/reversal_blue.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+ability_name = "Reversal Blue"
+essence_cost = 12.0
+cooldown = 12.0
+essence_restore = 45.0
+burst_color = Color(0.1, 0.5, 1.0, 1.0)
