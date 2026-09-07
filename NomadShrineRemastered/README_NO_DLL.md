@@ -42,6 +42,10 @@ longer be a no-DLL package.
 
 ## Install
 
-Copy the `NomadShrineRemasteredNoDLL` folder into the Blade & Sorcery:
+Keep the folder name exactly `NomadShrineRemastered` and copy it into the Blade & Sorcery:
 Nomad mods directory. This package is intended for the standalone Nomad
 runtime and does not include managed code.
+
+The folder name is intentional: the supplied Addressables catalog contains
+bundle paths under `NomadShrineRemastered/`. Renaming the folder causes asset
+lookup failures or catalog-version/path errors.
