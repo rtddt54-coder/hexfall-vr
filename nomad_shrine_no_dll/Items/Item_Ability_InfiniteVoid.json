@@ -1,0 +1,13 @@
+{
+  "$type": "ThunderRoad.ItemData, ThunderRoad",
+  "id": "HexfallInfiniteVoid",
+  "version": 1,
+  "displayName": "Domain Expansion: Infinite Void",
+  "description": "A purple Shrine ability focus for the Infinite Void domain.",
+  "author": "Hexfall",
+  "type": "Weapon",
+  "prefabAddress": "gojis.MalovalentShrine",
+  "slot": "Small",
+  "allowedStorage": "Container, SandboxAllItems",
+  "grippable": true
+}

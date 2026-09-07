@@ -1,0 +1,13 @@
+{
+  "$type": "ThunderRoad.ItemData, ThunderRoad",
+  "id": "HexfallReversalRed",
+  "version": 1,
+  "displayName": "Reversal Red",
+  "description": "A red Shrine ability focus. Use it to represent the aggressive reversal technique.",
+  "author": "Hexfall",
+  "type": "Weapon",
+  "prefabAddress": "gojis.MalovalentShrine",
+  "slot": "Small",
+  "allowedStorage": "Container, SandboxAllItems",
+  "grippable": true
+}

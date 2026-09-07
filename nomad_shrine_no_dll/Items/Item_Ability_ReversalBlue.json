@@ -1,0 +1,13 @@
+{
+  "$type": "ThunderRoad.ItemData, ThunderRoad",
+  "id": "HexfallReversalBlue",
+  "version": 1,
+  "displayName": "Reversal Blue",
+  "description": "A blue Shrine ability focus. Use it to represent the essence-restoring reversal technique.",
+  "author": "Hexfall",
+  "type": "Weapon",
+  "prefabAddress": "gojis.MalovalentShrine",
+  "slot": "Small",
+  "allowedStorage": "Container, SandboxAllItems",
+  "grippable": true
+}

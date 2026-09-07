@@ -1,0 +1,13 @@
+{
+  "$type": "ThunderRoad.ItemData, ThunderRoad",
+  "id": "HexfallReversalPurple",
+  "version": 1,
+  "displayName": "Reversal Purple",
+  "description": "A purple Shrine ability focus. Use it to represent the healing and slowing reversal technique.",
+  "author": "Hexfall",
+  "type": "Weapon",
+  "prefabAddress": "gojis.MalovalentShrine",
+  "slot": "Small",
+  "allowedStorage": "Container, SandboxAllItems",
+  "grippable": true
+}
