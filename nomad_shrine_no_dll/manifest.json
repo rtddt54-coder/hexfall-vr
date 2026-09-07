@@ -1,0 +1,8 @@
+{
+  "Name": "NomadShrineRemasteredNoDLL",
+  "Description": "Data-only Nomad package based on Nomad Shrine Remastered. Includes built-in items, effects, hand poses, and original asset bundles. Custom C# spell classes are not included.",
+  "Author": "gojiBum / Hexfall build",
+  "ModVersion": "1.0-no-dll",
+  "GameVersion": "1.0.0.0",
+  "Thumbnail": ""
+}
