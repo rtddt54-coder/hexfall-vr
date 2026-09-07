@@ -1,0 +1,16 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "SG0VUveq2dFotvGdVb_ia"
+uri = "file://NomadShrineRemasteredNoDLL.zip"
+type = "unspecified"
+title = "Nomad Shrine Remastered — No DLL"
+description = "Standalone Blade & Sorcery: Nomad package derived from the uploaded source. Contains asset bundles, built-in items, effects, and hand poses; verified with no DLL or PDB files."
+logical_id = "5c86e7fd-be56-4be7-a364-bd663d1a9a2c"
+content_hash = "sha256:1b060cece02bf1d10d8e558b9fa7c2d2e53225a324c392efd19ca05f10a56b29"
+size = 9378584
+mtime_ms = 1788761959929
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:05091b5b-3799-46fc-a3d9-ed00e319a8e6/5c86e7fd-be56-4be7-a364-bd663d1a9a2c/e0e64e6f-80d6-4023-bcd5-b86387e4aea5"
+storage_version_token = "1788761978931593"
+content_type = "application/octet-stream"
