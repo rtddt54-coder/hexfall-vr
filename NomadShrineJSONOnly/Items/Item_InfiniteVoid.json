@@ -1,0 +1,13 @@
+{
+  "$type": "ThunderRoad.ItemData, ThunderRoad",
+  "id": "HexfallInfiniteVoid",
+  "version": 1,
+  "displayName": "Domain Expansion: Infinite Void",
+  "description": "Portable Shrine ability focus.",
+  "author": "Hexfall",
+  "prefabAddress": "Bas.Item.Misc.SkillOrb",
+  "type": "Misc",
+  "slot": "Small",
+  "allowedStorage": "Container, SandboxAllItems",
+  "grippable": true
+}

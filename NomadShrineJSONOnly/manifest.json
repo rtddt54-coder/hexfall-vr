@@ -1,0 +1,8 @@
+{
+  "Name": "NomadShrineJSONOnly",
+  "Description": "Portable JSON-only Shrine ability items for Blade & Sorcery: Nomad. No Addressables catalog, asset bundle, DLL, or PDB dependency.",
+  "Author": "Hexfall build",
+  "ModVersion": "1.0.0",
+  "GameVersion": "1.0.7.677",
+  "Thumbnail": ""
+}
